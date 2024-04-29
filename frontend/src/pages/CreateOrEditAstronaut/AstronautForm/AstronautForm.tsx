@@ -1,5 +1,5 @@
 // React
-import { MouseEventHandler, FormEvent, useState } from "react";
+import { MouseEventHandler, FormEvent, useState, useEffect } from "react";
 
 // Libs
 import classnames from "classnames";
@@ -46,7 +46,6 @@ export function AstronautForm({
   onCancel,
   onSubmit,
 }: AstronautFormProps) {
-  debugger;
   const componentClassNames = classnames(styles.astronautform, className);
   const { currentPlanet } = useCurrentPlanet();
   const canCreate =
@@ -57,50 +56,47 @@ export function AstronautForm({
   const [formState, setFormState] = useState<FormStateType>({});
   const [astronautFirstname, setAstronautFirstname] = useState("");
   const [astronautLastname, setAstronautLastname] = useState("");
-  const [astronautOriginPlanet, setAstronautOriginPlanet] = useState("");
+  const [selectedPlanet, setSelectedPlanet] = useState({
+    label: "",
+    value: "",
+  });
+
+  useEffect(() => {
+    if (astronautForUpdate) {
+      setAstronautFirstname(astronautForUpdate.firstname);
+      setAstronautLastname(astronautForUpdate.lastname);
+      setSelectedPlanet({
+        label: astronautForUpdate.originPlanet?.name,
+        value: astronautForUpdate.originPlanet?.id.toString() || "",
+      });
+    } else {
+      setAstronautFirstname("");
+      setAstronautLastname("");
+      setSelectedPlanet({ label: "Select a Planet", value: "" });
+    }
+  }, [astronautForUpdate]);
 
   const validateAndSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const validationErrors: FormStateType = {};
-    if (
-      typeof astronautFirstname !== "string" ||
-      astronautFirstname === ""
-    ) {
-      validationErrors.firstname = "firstname is required";
-    }
-    if (
-      typeof astronautLastname !== "string" ||
-      astronautLastname === ""
-    ) {
-      validationErrors.lastname = "lastname is require";
-    }
-    if (
-      typeof astronautOriginPlanet !== "string" ||
-      astronautOriginPlanet === ""
-    ) {
-      validationErrors.planet = "planet of origin is required";
-    }
+    if (!astronautFirstname.trim())
+      validationErrors.firstname = "Firstname is required";
+    if (!astronautLastname.trim())
+      validationErrors.lastname = "Lastname is required";
+    if (astronautFirstname.trim().length < 2)
+      validationErrors.firstname = "Firstname must be at least 2 characters";
+    if (mode === "edit" && !selectedPlanet.value)
+      validationErrors.planet = "Planet of origin is required";
 
-    // submit the form if there is no validation error
-    if (
-      !Object.keys(validationErrors).length &&
-      astronautFirstname &&
-      astronautLastname &&
-      astronautOriginPlanet
-    ) {
+    if (Object.keys(validationErrors).length === 0) {
       onSubmit({
         firstname: astronautFirstname,
         lastname: astronautLastname,
-        originPlanetId: parseInt(astronautOriginPlanet),
+        originPlanetId: parseInt(selectedPlanet.value),
       });
     } else {
       setFormState(validationErrors);
     }
-  };
-
-  const defaultSelectedPlanet = {
-    value: astronautForUpdate?.originPlanet.id?.toString() || "",
-    label: astronautForUpdate?.originPlanet.name || "",
   };
 
   return (
@@ -118,22 +114,33 @@ export function AstronautForm({
         >
           <HUDInput
             name="firstname"
-            label="firstname"
+            label="Firstname"
             placeholder="John"
             required
-            defaultValue={astronautForUpdate?.firstname || ""}
+            value={astronautFirstname}
             error={formState.firstname}
             onChange={(e) => setAstronautFirstname(e.target.value)}
           />
           <HUDInput
             name="lastname"
-            label="lastname"
+            label="Lastname"
             placeholder="Doe"
             required
-            defaultValue={astronautForUpdate?.lastname || ""}
+            value={astronautLastname}
             error={formState.lastname}
             onChange={(e) => setAstronautLastname(e.target.value)}
           />
+          {mode === "edit" && (
+            <HUDAutoComplete
+              name="planet"
+              label="Planet of Origin"
+              placeholder={selectedPlanet.label}
+              error={formState.planet}
+              fetchOptions={getPlanetListByNameAPICall}
+              defaultValue={selectedPlanet}
+              onChange={(newPlanet) => setSelectedPlanet(newPlanet)}
+            />
+          )}
           <Flexbox
             className={styles.astronautformButtons}
             alignItems="center"
@@ -150,12 +157,12 @@ export function AstronautForm({
       </HUDWindow>
       {mode !== "edit" && !canCreate && (
         <HUDWindow className={styles.astronautformCannotCreate}>
-          <h2>Warning !</h2>
+          <h2>Warning!</h2>
           <p>
-            Cannot create an astronaut because the current planet don \'t
-            shelters life.
+            Cannot create an astronaut because the current planet does not
+            shelter life.
           </p>
-          <p>Travel to an another planet to add an astronaut.</p>
+          <p>Travel to another planet to add an astronaut.</p>
         </HUDWindow>
       )}
     </Flexbox>

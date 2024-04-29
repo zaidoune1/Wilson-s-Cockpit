@@ -10,6 +10,7 @@ import { Astronaut } from "../api/astronaut.api";
 
 type SpaceshipContextType = {
   astronautList: {
+    [x: string]: any;
     isLoading: boolean;
     astronautList?: Astronaut[] | null;
     error?: FetchError | null;

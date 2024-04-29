@@ -4,24 +4,39 @@ import knex from "../db";
 const PlanetController = {
   getAll: async (req: Request, res: Response): Promise<void> => {
     try {
-      const planets = (
-        await knex("planets")
-          .select("planets.*", "images.path", "images.name as imageName")
-          .join("images", "images.id", "=", "planets.imageId")
-          .where((queryBuilder) => {})
-      ).map(({ id, name, isHabitable, description, path, imageName }) => ({
-        id,
-        name,
-        isHabitable,
-        description,
-        image: {
-          path,
-          name: imageName,
-        },
-      }));
-      res.status(200).json(planets);
+      const filterName = req.query.filterName as string;
+
+      let query = knex("planets")
+        .select("planets.*", "images.path", "images.name as imageName")
+        .join("images", "images.id", "=", "planets.imageId");
+
+      if (filterName) {
+        query = query.where("planets.name", "ilike", `%${filterName}%`);
+      }
+
+      const planetsData = await query;
+
+      const planets = planetsData.map(
+        ({ id, name, isHabitable, description, path, imageName }) => ({
+          id,
+          name,
+          isHabitable,
+          description,
+          image: {
+            path,
+            name: imageName,
+          },
+        })
+      );
+
+      if (planets.length === 0) {
+        res.status(404).json({ error: "Aucune planète trouvée" });
+      } else {
+        res.status(200).json(planets);
+      }
     } catch (error) {
-      res.status(500).json({ error: "Internal Server Error" });
+      console.error("Erreur lors de la récupération des planètes :", error);
+      res.status(500).json({ error: "Erreur interne du serveur" });
     }
   },
 

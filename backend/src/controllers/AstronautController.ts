@@ -4,42 +4,40 @@ import knex from "../db";
 const AstronautController = {
   getAll: async (req: Request, res: Response): Promise<void> => {
     try {
-      const astronauts = (
-        await knex("astronauts").select(
-          "astronauts.*",
-          "planets.name",
-          "planets.description",
+      const astronautData = await knex("astronauts")
+        .join("planets", "astronauts.originPlanetId", "=", "planets.id")
+        .leftJoin("images", "planets.imageId", "=", "images.id")
+        .select(
+          "astronauts.id",
+          "astronauts.firstname",
+          "astronauts.lastname",
+          "planets.name as planetName",
+          "planets.description as planetDescription",
           "planets.isHabitable",
-          "images.path",
+          "images.path as imagePath",
           "images.name as imageName"
-        )
-      ).map(
-        ({
-          id,
-          firstname,
-          lastname,
-          name,
-          isHabitable,
-          description,
-          path,
-          imageName,
-        }) => ({
-          id,
-          firstname,
-          lastname,
-          originPlanet: {
-            name,
-            isHabitable,
-            description,
-            image: {
-              path,
-              name: imageName,
-            },
+        );
+
+      console.log("Retrieved astronaut data:", astronautData);
+
+      const astronauts = astronautData.map((astronaut: any): any => ({
+        id: astronaut.id,
+        firstname: astronaut.firstname,
+        lastname: astronaut.lastname,
+        originPlanet: {
+          name: astronaut.planetName,
+          description: astronaut.planetDescription,
+          isHabitable: astronaut.isHabitable,
+          image: {
+            path: astronaut.imagePath,
+            name: astronaut.imageName,
           },
-        })
-      );
+        },
+      }));
+
       res.status(200).json(astronauts);
     } catch (error) {
+      console.error("Error fetching astronauts:", error);
       res.status(500).json({ error: "Internal Server Error" });
     }
   },
@@ -72,11 +70,11 @@ const AstronautController = {
           },
         });
       } else {
-        res.status(500).json({ error: "Astronaut not found" });
+        res.status(404).json({ error: "Astronaut not found" });
       }
     } catch (error) {
       console.error(error);
-      res.status(400).json({ error: "Internal Server Error" });
+      res.status(500).json({ error: "Internal Server Error" });
     }
   },
 
@@ -96,7 +94,6 @@ const AstronautController = {
       res.status(500).json({ error: "Internal Server Error" });
     }
   },
-
   update: async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
     const { firstname, lastname, originPlanetId } = req.body;
@@ -105,11 +102,18 @@ const AstronautController = {
         .where("id", id)
         .update({ firstname, lastname, originPlanetId });
       if (updatedRows > 0) {
-        res.status(200).json({ message: "Astronaut updated successfully" });
+        const updatedAstronaut = await knex("astronauts")
+          .where("id", id)
+          .first();
+        res.status(200).json({
+          message: "Astronaut updated successfully",
+          astronaut: updatedAstronaut,
+        });
       } else {
         res.status(404).json({ error: "Astronaut not found" });
       }
     } catch (error) {
+      console.error(error);
       res.status(500).json({ error: "Internal Server Error" });
     }
   },
@@ -124,6 +128,7 @@ const AstronautController = {
         res.status(404).json({ error: "Astronaut not found" });
       }
     } catch (error) {
+      console.error(error);
       res.status(500).json({ error: "Internal Server Error" });
     }
   },
