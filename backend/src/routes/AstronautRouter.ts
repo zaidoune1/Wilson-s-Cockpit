@@ -1,4 +1,3 @@
-// src/routes/AstronautRouter.ts
 import express from "express";
 import AstronautController from "../controllers/AstronautController";
 

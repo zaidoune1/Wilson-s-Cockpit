@@ -18,7 +18,7 @@ const AstronautController = {
           "images.name as imageName"
         );
 
-      console.log("Retrieved astronaut data:", astronautData);
+      console.log("astronaut data:", astronautData);
 
       const astronauts = astronautData.map((astronaut: any): any => ({
         id: astronaut.id,

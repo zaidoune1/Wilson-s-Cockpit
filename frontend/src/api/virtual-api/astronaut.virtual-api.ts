@@ -102,13 +102,7 @@ export const createAstronautHandler = http.post(
 
 export const updateAstronautHandler = http.put(
   `http://${import.meta.env.VITE_API_URL}/astronauts/:id`,
-  (req) => {
-    const { id } = req.params;
-
-    const findAstro = mockAstronautList.find((el) => el.id.toString() === id);
-
-    console.log(findAstro);
-
+  () => {
     return HttpResponse.json({
       ...mockAstronautList[1],
       lastname: "Joe",

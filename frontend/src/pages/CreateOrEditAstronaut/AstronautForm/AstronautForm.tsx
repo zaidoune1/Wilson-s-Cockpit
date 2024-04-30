@@ -56,7 +56,7 @@ export function AstronautForm({
   const [formState, setFormState] = useState<FormStateType>({});
   const [astronautFirstname, setAstronautFirstname] = useState("");
   const [astronautLastname, setAstronautLastname] = useState("");
-  const [selectedPlanet, setSelectedPlanet] = useState({
+  const [astronautOriginPlanet, setAstronautOriginPlanet] = useState({
     label: "",
     value: "",
   });
@@ -65,31 +65,43 @@ export function AstronautForm({
     if (astronautForUpdate) {
       setAstronautFirstname(astronautForUpdate.firstname || "");
       setAstronautLastname(astronautForUpdate.lastname || "");
-      setSelectedPlanet({
+      setAstronautOriginPlanet({
         label: astronautForUpdate.originPlanet?.name || "Select a Planet",
         value: astronautForUpdate.originPlanet?.id.toString() || "",
       });
     } else {
       setAstronautFirstname("");
       setAstronautLastname("");
-      setSelectedPlanet({ label: "Select a Planet", value: "" });
+      setAstronautOriginPlanet({ label: "Select a Planet", value: "" });
     }
   }, [astronautForUpdate]);
 
   const validateAndSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const validationErrors: FormStateType = {};
-    if (!astronautFirstname)
-      validationErrors.firstname = "Firstname is required";
-    if (!astronautLastname) validationErrors.lastname = "Lastname is required";
-    if (mode === "edit" && !selectedPlanet.value)
-      validationErrors.planet = "Planet of origin is required";
+    if (typeof astronautFirstname !== "string" || astronautFirstname === "") {
+      validationErrors.firstname = "firstname is required";
+    }
+    if (typeof astronautLastname !== "string" || astronautLastname === "") {
+      validationErrors.lastname = "lastname is require";
+    }
+    if (
+      typeof astronautOriginPlanet !== "string" ||
+      astronautOriginPlanet === ""
+    ) {
+      validationErrors.planet = "planet of origin is required";
+    }
 
-    if (!Object.keys(validationErrors).length) {
+    if (
+      !Object.keys(validationErrors).length &&
+      astronautFirstname &&
+      astronautLastname &&
+      astronautOriginPlanet
+    ) {
       onSubmit({
         firstname: astronautFirstname,
         lastname: astronautLastname,
-        originPlanetId: parseInt(selectedPlanet.value),
+        originPlanetId: parseInt(astronautOriginPlanet.value),
       });
     } else {
       setFormState(validationErrors);
@@ -131,11 +143,11 @@ export function AstronautForm({
             <HUDAutoComplete
               name="planet"
               label="Planet of Origin"
-              placeholder={selectedPlanet.label} // Utilisez le nom de la planète comme placeholder
+              placeholder={astronautOriginPlanet.label}
               error={formState.planet}
               fetchOptions={getPlanetListByNameAPICall}
-              defaultValue={selectedPlanet}
-              onChange={(newPlanet) => setSelectedPlanet(newPlanet)}
+              defaultValue={astronautOriginPlanet}
+              onChange={(newPlanet) => setAstronautOriginPlanet(newPlanet)}
             />
           )}
           <Flexbox
