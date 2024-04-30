@@ -72,8 +72,17 @@ export const deleteAstronautErrorHandler = http.delete(
 
 export const getOneAstronautHandler = http.get(
   `http://${import.meta.env.VITE_API_URL}/astronauts/:id`,
-  () => {
-    return HttpResponse.json(mockAstronautList[1]);
+  (req) => {
+    const { id } = req.params;
+    const astronaut = mockAstronautList.find((a) => a.id.toString() === id);
+    if (astronaut) {
+      return HttpResponse.json(astronaut);
+    } else {
+      return new HttpResponse(null, {
+        status: 404,
+        statusText: "Not Found",
+      });
+    }
   },
 );
 
@@ -93,7 +102,13 @@ export const createAstronautHandler = http.post(
 
 export const updateAstronautHandler = http.put(
   `http://${import.meta.env.VITE_API_URL}/astronauts/:id`,
-  () => {
+  (req) => {
+    const { id } = req.params;
+
+    const findAstro = mockAstronautList.find((el) => el.id.toString() === id);
+
+    console.log(findAstro);
+
     return HttpResponse.json({
       ...mockAstronautList[1],
       lastname: "Joe",

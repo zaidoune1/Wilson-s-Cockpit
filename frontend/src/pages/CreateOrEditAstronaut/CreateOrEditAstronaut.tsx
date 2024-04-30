@@ -1,5 +1,6 @@
 // Libs
 import { useParams, useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 // Components
 import { Flexbox } from "../../components/Flexbox";
@@ -34,6 +35,7 @@ export function CreateOrEditAstronaut() {
     astronaut: CreateUpdateAstronautRequestBody,
   ) => {
     await createAstronautAPICall(astronaut);
+
     navigate("/spaceship-admin");
   };
   const handleAstronautFormEdit = async (

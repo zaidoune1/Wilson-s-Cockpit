@@ -1,4 +1,4 @@
-// React
+//React
 import { MouseEventHandler, FormEvent, useState, useEffect } from "react";
 
 // Libs
@@ -63,10 +63,10 @@ export function AstronautForm({
 
   useEffect(() => {
     if (astronautForUpdate) {
-      setAstronautFirstname(astronautForUpdate.firstname);
-      setAstronautLastname(astronautForUpdate.lastname);
+      setAstronautFirstname(astronautForUpdate.firstname || "");
+      setAstronautLastname(astronautForUpdate.lastname || "");
       setSelectedPlanet({
-        label: astronautForUpdate.originPlanet?.name,
+        label: astronautForUpdate.originPlanet?.name || "Select a Planet",
         value: astronautForUpdate.originPlanet?.id.toString() || "",
       });
     } else {
@@ -79,16 +79,13 @@ export function AstronautForm({
   const validateAndSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const validationErrors: FormStateType = {};
-    if (!astronautFirstname.trim())
+    if (!astronautFirstname)
       validationErrors.firstname = "Firstname is required";
-    if (!astronautLastname.trim())
-      validationErrors.lastname = "Lastname is required";
-    if (astronautFirstname.trim().length < 2)
-      validationErrors.firstname = "Firstname must be at least 2 characters";
+    if (!astronautLastname) validationErrors.lastname = "Lastname is required";
     if (mode === "edit" && !selectedPlanet.value)
       validationErrors.planet = "Planet of origin is required";
 
-    if (Object.keys(validationErrors).length === 0) {
+    if (!Object.keys(validationErrors).length) {
       onSubmit({
         firstname: astronautFirstname,
         lastname: astronautLastname,
@@ -134,7 +131,7 @@ export function AstronautForm({
             <HUDAutoComplete
               name="planet"
               label="Planet of Origin"
-              placeholder={selectedPlanet.label}
+              placeholder={selectedPlanet.label} // Utilisez le nom de la planète comme placeholder
               error={formState.planet}
               fetchOptions={getPlanetListByNameAPICall}
               defaultValue={selectedPlanet}

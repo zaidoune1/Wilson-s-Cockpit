@@ -45,7 +45,6 @@ export function SpaceshipAdmin() {
     setAstronautList({ isLoading, astronautList: data, error });
   }, [data, error, isLoading]);
 
-
   return (
     <Flexbox className={styles.spaceshipadmin} flexDirection="column">
       <Flexbox justifyContent="center" alignItems="center">

@@ -8,7 +8,7 @@ export const mockPlanetList = [
       "The planet of the amazing Racoon of Asguards. You can access this planet with your ship or thought the Bifrost.",
     image: {
       name: "Raccon planet image",
-      path: "https://static.wikia.nocookie.net/marvelcinematicuniverse/images/2/26/AsgardFull.jpg/revision/latest?cb=20220709021326",
+      path: "https://static.wikia.nocookie.net/marvelcinematicuniverse/images/2/26/AsgardFull.jpg",
     },
     isHabitable: true,
   },
@@ -30,7 +30,7 @@ export const mockPlanetList = [
       "The planet of the Navi. They live in harmony with the nature and the planet.",
     image: {
       name: "Pandora planet image",
-      path: "https://static.wikia.nocookie.net/jamescameronsavatar/images/c/c6/Pandora_Visual_Dictionary.png/revision/latest?cb=20231202070727",
+      path: "https://static.wikia.nocookie.net/jamescameronsavatar/images/c/c6/Pandora_Visual_Dictionary.png",
     },
     isHabitable: true,
   },

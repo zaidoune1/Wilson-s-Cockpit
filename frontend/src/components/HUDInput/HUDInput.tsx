@@ -40,7 +40,7 @@ export const HUDInput = forwardRef<HTMLInputElement | null, HUDInputProps>(
       [styles.hudinputBarError]: error !== null,
     });
 
-    console.log('INPUT STATE RELOAD');
+    console.log("INPUT STATE RELOAD");
 
     return (
       <div className={componentClassNames} style={style}>

@@ -52,9 +52,10 @@ export type CreateUpdateAstronautResponse = CreateUpdateAstronautRequestBody & {
 export function createAstronautAPICall(
   astronautToCreate: CreateUpdateAstronautRequestBody,
 ): Promise<CreateUpdateAstronautResponse> {
-  return fetchApi<CreateUpdateAstronautResponse>("/astronauts/", {
+  return fetchApi<CreateUpdateAstronautResponse>("/astronauts", {
     method: "POST",
     body: JSON.stringify(astronautToCreate),
+    headers: { "Content-Type": "application/json" },
   });
 }
 
@@ -65,5 +66,6 @@ export function updateAstronautAPICall(
   return fetchApi<CreateUpdateAstronautResponse>(`/astronauts/${astronautId}`, {
     method: "PUT",
     body: JSON.stringify(astronautToUpdate),
+    headers: { "Content-Type": "application/json" },
   });
 }

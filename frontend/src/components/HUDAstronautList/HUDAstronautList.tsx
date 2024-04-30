@@ -18,6 +18,7 @@ import styles from "./HUDAstronautList.module.css";
 
 export type AstronautForList = {
   id: number;
+
   firstname: string;
   lastname: string;
   planetOfOrigin: string;
